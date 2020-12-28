@@ -18,9 +18,9 @@ class CameraViewController: UIViewController {
     
     
     private let size = CGSize(width: 1080, height: 1920)
-    let step: CGFloat = 1920 / 30 / 10
+    let step = 1920 / 30 / 10
     
-    var offset: CGFloat = 0.0
+    var offset = 0
     //session
     let captureSession = AVCaptureSession()
     
@@ -324,18 +324,16 @@ class CameraViewController: UIViewController {
             return
         }
         
-        queue.async {
-            self.isRecording = false
-            writer.finishWriting { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                UISaveVideoAtPathToSavedPhotosAlbum(self.outputFileURL().path, self, nil, nil);
-
-                print("录制结束")
-                DispatchQueue.main.async {
-                    self.recordingButton.isSelected = false
-                }
+        self.isRecording = false
+        writer.finishWriting { [weak self] in
+            guard let self = self else {
+                return
+            }
+            UISaveVideoAtPathToSavedPhotosAlbum(self.outputFileURL().path, self, nil, nil);
+            
+            print("录制结束")
+            DispatchQueue.main.async {
+                self.recordingButton.isSelected = false
             }
         }
 //
@@ -392,61 +390,61 @@ class CameraViewController: UIViewController {
         
         if mediaType == kCMMediaType_Video {
             
-//            if self.writerVideoInput.isReadyForMoreMediaData {
+            //处理图像
+            let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
+            // 转换为CIImage
+            let ciImage = CIImage.init(cvImageBuffer: imageBuffer!)
+            
+            // 创建滤镜
+//            let fiter = CIFilter.init(name: "CIBumpDistortion", parameters: ["inputImage": ciImage])
+//            let resultCIImage = fiter?.outputImage
+            
+            //创建上下文
+            UIGraphicsBeginImageContext(CGSize(width: size.height, height: size.width))
+            let backImage = UIImage.init(ciImage: ciImage)
+            
+            
+            backImage.draw(in: CGRect(x: 0, y: 0, width: size.height, height: size.width))
+            
+            if preSubImage != nil {
+                //添加上一帧
+                preSubImage!.draw(in: CGRect(x: 0, y: 0, width: CGFloat(offset), height: size.width))
+            }
+            
+            //保存上一帧
+            let preImage = UIGraphicsGetImageFromCurrentImageContext()
+            let preCGImage = context.createCGImage(CIImage.init(cgImage: (preImage?.cgImage)!), from: CGRect(x: 0, y: 0, width: CGFloat(offset + step), height: size.width))
+            preSubImage = UIImage.init(cgImage: preCGImage!)
+            
+            //添加蓝线
+            blueLine.draw(in: CGRect(x: CGFloat(offset), y: 0, width: 30, height: size.height))
+            let resultImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            
+            offset += step
+            
+            if isRecording && writerVideoInput.isReadyForMoreMediaData {
+                //录制
+                var newPixelBuffer: CVPixelBuffer?
+                CVPixelBufferPoolCreatePixelBuffer(nil, adaptor!.pixelBufferPool!, &newPixelBuffer)
                 
-//                //处理图像
-                let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
-                // 转换为CIImage
-                let ciImage = CIImage.init(cvImageBuffer: imageBuffer!)
+                context.render(CIImage.init(image: resultImage!)!, to: newPixelBuffer!, bounds: ciImage.extent, colorSpace: nil)
                 
-                // 创建滤镜
-//                let fiter = CIFilter.init(name: "CIBumpDistortion", parameters: ["inputImage": ciImage])
-//                let resultCIImage = fiter?.outputImage
-                
-                
-                //创建上下文
-                UIGraphicsBeginImageContext(CGSize(width: size.height, height: size.width))
-                let backImage = UIImage.init(ciImage: ciImage)
-                
-                
-                backImage.draw(in: CGRect(x: 0, y: 0, width: size.height, height: size.width))
-                
-                if preSubImage != nil {
-                    //添加上一帧
-                    preSubImage!.draw(in: CGRect(x: 0, y: 0, width: offset, height: size.width))
+                if !adaptor!.append(newPixelBuffer!, withPresentationTime: currentTime!) {
+                    print("append field  \(String(describing: writer?.error))")
                 }
                 
-                //保存上一帧
-                let preImage = UIGraphicsGetImageFromCurrentImageContext()
-                let preCGImage = context.createCGImage(CIImage.init(cgImage: (preImage?.cgImage)!), from: CGRect(x: 0, y: 0, width: offset + step, height: size.width))
-                preSubImage = UIImage.init(cgImage: preCGImage!)
-                
-                //添加蓝线
-                blueLine.draw(in: CGRect(x: offset, y: 0, width: 30, height: size.height))
-                let resultImage = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                
-                
-                offset += step
-                
-                if isRecording {
-                    //录制
-                    var newPixelBuffer: CVPixelBuffer?
-                    CVPixelBufferPoolCreatePixelBuffer(nil, adaptor!.pixelBufferPool!, &newPixelBuffer)
-                    
-                    context.render(CIImage.init(image: resultImage!)!, to: newPixelBuffer!, bounds: ciImage.extent, colorSpace: nil)
-                    
-                    adaptor?.append(newPixelBuffer!, withPresentationTime: currentTime!)
+            }
+            //预览
+            if resultImage != nil {
+                let resultCi = CIImage.init(image: resultImage!)
+                let image = UIImage.init(ciImage: resultCi!.oriented(.right))
+                DispatchQueue.main.async {
+                    self.imageView.image = image
                 }
-                //预览
-                if resultImage != nil {
-                    let resultCi = CIImage.init(image: resultImage!)
-                    let image = UIImage.init(ciImage: resultCi!.oriented(.right))
-                    DispatchQueue.main.async {
-                        self.imageView.image = image
-                    }
-                }
-//            }
+            }
+
         } else if isRecording && mediaType == kCMMediaType_Audio {
             if self.writerAudioInput.isReadyForMoreMediaData {
                 
