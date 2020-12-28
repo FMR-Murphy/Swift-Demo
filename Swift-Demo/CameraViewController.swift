@@ -8,11 +8,7 @@
 import UIKit
 import AVKit
 import CoreGraphics
-//import OpenGLES
-//import CoreMedia
-
-
-
+import SnapKit
 
 class CameraViewController: UIViewController {
     
@@ -76,12 +72,6 @@ class CameraViewController: UIViewController {
     }()
     
     var adaptor: AVAssetWriterInputPixelBufferAdaptor?
-//    lazy var adaptor =  { () -> AVAssetWriterInputPixelBufferAdaptor in
-//        let adaptor = AVAssetWriterInputPixelBufferAdaptor.init(assetWriterInput: writerVideoInput, sourcePixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32ARGB])
-//
-//        return adaptor
-//    }()
-    
     
     //UI
     lazy var recordingButton = { () -> UIButton in
@@ -129,14 +119,8 @@ class CameraViewController: UIViewController {
         present(playerVC, animated: true) {
             player.play()
         }
-
+        
     }
-    
-    lazy var photoView = { () -> UIView in
-        let view = UIView.init()
-        view.backgroundColor = .green
-        return view
-    }()
     
     lazy var imageView = { () -> UIImageView in
         let view = UIImageView()
@@ -158,6 +142,7 @@ class CameraViewController: UIViewController {
         
         return image ?? UIImage()
     }()
+    
     //标记
     var isRecording = false
     
@@ -166,18 +151,15 @@ class CameraViewController: UIViewController {
         //MARK: UI
         
         createUI()
-        bindSignal()
         
         //CaptureSession
         captureSession.beginConfiguration()
         captureSession.sessionPreset = AVCaptureSession.Preset.hd1920x1080
         addVideo()
         addAudio()
-        addPreviewLayer()
         
         captureSession.commitConfiguration()
         captureSession.startRunning()
-        
         
         // Do any additional setup after loading the view.
     }
@@ -186,13 +168,15 @@ class CameraViewController: UIViewController {
     
     func createUI() {
         
-        view.addSubview(photoView)
-        photoView.snp.makeConstraints { (make) in
-            make.edges.equalTo(view)
+        view.backgroundColor = .gray
+        
+        view.addSubview(imageView)
+        imageView.snp.makeConstraints { (make) in
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.left.right.equalTo(0)
+            make.height.equalTo(imageView.snp.width).multipliedBy(size.height / size.width)
         }
         
-        
-        view.backgroundColor = .gray
         let stackView = UIStackView()
         stackView.distribution = .fillEqually
         stackView.alignment = .center
@@ -206,17 +190,6 @@ class CameraViewController: UIViewController {
             make.left.right.equalTo(0)
             make.height.equalTo(45)
         }
-        
-        view.addSubview(imageView)
-        imageView.snp.makeConstraints { (make) in
-            make.right.equalTo(0)
-            make.centerY.equalTo((view))
-            make.height.width.equalTo(300)
-        }
-    }
-    
-    func bindSignal() {
-        
     }
     
     func addVideo() {
@@ -267,16 +240,6 @@ class CameraViewController: UIViewController {
         }
     }
     
-    func addPreviewLayer() {
-        videoPreviewLayer = AVCaptureVideoPreviewLayer.init(session: captureSession)
-        videoPreviewLayer?.frame = view.bounds
-        videoPreviewLayer?.position = view.center
-//        videoPreviewLayer?.videoGravity  = .resizeAspect
-        
-        photoView.layer.addSublayer(videoPreviewLayer!)
-        
-    }
-    
     func createWriter() -> AVAssetWriter? {
         
         self.writer = try? AVAssetWriter.init(outputURL: self.outputFileURL(), fileType: .mp4)
@@ -292,30 +255,27 @@ class CameraViewController: UIViewController {
         if writer.canAdd(writerVideoInput) {
             writer.add(writerVideoInput)
         }
-        
-        if writer.startWriting() {
-            writer.startSession(atSourceTime: currentTime!)
-        }
-        
         return writer
     }
     
     //MARK: 录制控制
     func startRecord() {
-        
         writer = createWriter()
         
-        if FileManager.default.fileExists(atPath: outputFileURL().path) {
-            do {
-                try FileManager.default.removeItem(at: outputFileURL())
-            } catch {
-                print("删除失败 \(String(describing: error))")
-            }
+        guard let writer = writer else {
+            print("writer can't nil")
+            return
         }
-        print("录制开始")
-        offset = 0
-        self.isRecording = true
-        recordingButton.isSelected = true
+        
+        queue.sync { [weak self] in
+            if writer.startWriting() {
+                writer.startSession(atSourceTime: currentTime!)
+                self?.isRecording = true
+            }
+            print("录制开始 - \(String(describing: writer.error))")
+            offset = 0
+        }
+        self.recordingButton.isSelected = true
     }
     
     
@@ -324,39 +284,30 @@ class CameraViewController: UIViewController {
             return
         }
         
-        self.isRecording = false
+        queue.sync {
+            self.isRecording = false
+        }
         writer.finishWriting { [weak self] in
             guard let self = self else {
                 return
             }
-            UISaveVideoAtPathToSavedPhotosAlbum(self.outputFileURL().path, self, nil, nil);
+            UISaveVideoAtPathToSavedPhotosAlbum(self.outputFileURL().path, self, #selector(self.saveVideoFinish(withPath:error:context:)), nil);
             
             print("录制结束")
             DispatchQueue.main.async {
                 self.recordingButton.isSelected = false
             }
         }
-//
-//        switch writer.status {
-//        case .writing:
-//            break
-//        case .unknown:
-//            print("====录制状态未知")
-//            break
-//        case .completed:
-//            print("====录制完成")
-//            break
-//        case .cancelled:
-//            print("====录制取消")
-//            break
-//        case .failed:
-//            print("====录制失败")
-//
-//            break
-//        default:
-//            print("录制状态  \(writer.status)")
-//        }
-      
+    }
+    
+    
+    @objc func saveVideoFinish(withPath path: String, error: NSError, context: Any) {
+        print("保存结果  -----  \(error)")
+        do {
+            try FileManager.default.removeItem(at: outputFileURL())
+        } catch {
+            print(error)
+        }
     }
     
     //MARK: 处理数据流
@@ -366,24 +317,6 @@ class CameraViewController: UIViewController {
             print("formatDesc 为空")
             return
         }
-//        guard let writer = writer else {
-//            print("writer can't nil")
-//            return
-//        }
-        
-//        switch writer.status {
-//        case .unknown:
-//            print("====录制状态未知")
-//            if writer.startWriting() {
-//                writer.startSession(atSourceTime: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
-//
-//                return
-//            }
-//            break
-//        default:
-//            print("录制状态  \(writer.status.rawValue)")
-//        }
-        
         
         let mediaType = CMFormatDescriptionGetMediaType(formatDesc)
         currentTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
@@ -421,11 +354,10 @@ class CameraViewController: UIViewController {
             let resultImage = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
             
-            
             offset += step
             
+            //录制
             if isRecording && writerVideoInput.isReadyForMoreMediaData {
-                //录制
                 var newPixelBuffer: CVPixelBuffer?
                 CVPixelBufferPoolCreatePixelBuffer(nil, adaptor!.pixelBufferPool!, &newPixelBuffer)
                 
@@ -445,8 +377,8 @@ class CameraViewController: UIViewController {
                 }
             }
 
-        } else if isRecording && mediaType == kCMMediaType_Audio {
-            if self.writerAudioInput.isReadyForMoreMediaData {
+        } else if mediaType == kCMMediaType_Audio {
+            if self.writerAudioInput.isReadyForMoreMediaData && isRecording {
                 
                 if !self.writerAudioInput.append(sampleBuffer) {
                     print("======= audio write failed \(String(describing: self.writer?.error))")
@@ -457,16 +389,6 @@ class CameraViewController: UIViewController {
     
     func outputFileURL() -> URL {
         return URL.init(fileURLWithPath: "\(NSTemporaryDirectory())output.mp4")
-    }
-    
-    func image(fromSampleBuffer buffer: CMSampleBuffer, rect: CGRect) -> UIImage {
-        
-        let imageBuffer = CMSampleBufferGetImageBuffer(buffer)
-        let ciimage = CIImage(cvPixelBuffer: imageBuffer!)
-        let context = CIContext.init()
-        let cgImage = context.createCGImage(ciimage, from: ciimage.extent)
-        let image = UIImage.init(cgImage: cgImage!)
-        return image
     }
     
     /*
@@ -511,11 +433,6 @@ extension CameraViewController: AVPlayerViewControllerDelegate {
     func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
         
         playerViewController.dismiss(animated: true) {
-            do {
-                try FileManager.default.removeItem(at: self.outputFileURL())
-            } catch {
-                print(error)
-            }
             
         }
         

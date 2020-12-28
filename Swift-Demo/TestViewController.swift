@@ -40,12 +40,6 @@ class TestViewController: UIViewController, UIImagePickerControllerDelegate, UIN
 //        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: {(timer) in
 //            print("1234567890")
 //        })
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        let camera = UIImagePickerController.isSourceTypeAvailable(.camera)
-        
-        let availableFront = UIImagePickerController.isCameraDeviceAvailable(.front)
-        let availableRear = UIImagePickerController.isCameraDeviceAvailable(.rear)
-        
         
         let enterBack = NotificationCenter.default.rx.notification(Notification.Name.NSExtensionHostDidEnterBackground).takeUntil(rx.deallocated).subscribe { [weak self ](notification) in
             

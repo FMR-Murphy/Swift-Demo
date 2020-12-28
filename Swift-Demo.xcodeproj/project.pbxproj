@@ -26,7 +26,6 @@
 		216135DC2500E082003A2B7A /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216135DB2500E082003A2B7A /* Bus.swift */; };
 		216135DE2500E23D003A2B7A /* SpeedWay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216135DD2500E23D003A2B7A /* SpeedWay.swift */; };
 		216135E02500E25C003A2B7A /* Street.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216135DF2500E25C003A2B7A /* Street.swift */; };
-		219E904A258F2E7000B8A962 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 219E9049258F2E7000B8A962 /* CameraView.swift */; };
 		21B4F76F258DFFAA003B0A2C /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B4F76E258DFFAA003B0A2C /* CameraViewController.swift */; };
 		21BC5E9C2515D7040021BD4A /* RootListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BC5E9B2515D7040021BD4A /* RootListView.swift */; };
 		21DA2DD9255051030028033D /* Timer+Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21DA2DD8255051030028033D /* Timer+Weak.swift */; };
@@ -56,7 +55,6 @@
 		216135DD2500E23D003A2B7A /* SpeedWay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedWay.swift; sourceTree = "<group>"; };
 		216135DF2500E25C003A2B7A /* Street.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Street.swift; sourceTree = "<group>"; };
 		217E3EEE2593945500BFC1A8 /* Swift-Demo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Swift-Demo-Bridging-Header.h"; sourceTree = "<group>"; };
-		219E9049258F2E7000B8A962 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		21B4F76E258DFFAA003B0A2C /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		21BC5E9B2515D7040021BD4A /* RootListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootListView.swift; sourceTree = "<group>"; };
 		21DA2DD8255051030028033D /* Timer+Weak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Timer+Weak.swift"; sourceTree = "<group>"; };
@@ -111,7 +109,6 @@
 				2161359524FFCBF7003A2B7A /* ViewController.swift */,
 				215E60D3251E0E0200B14191 /* TestViewController.swift */,
 				21B4F76E258DFFAA003B0A2C /* CameraViewController.swift */,
-				219E9049258F2E7000B8A962 /* CameraView.swift */,
 				21DA2DD8255051030028033D /* Timer+Weak.swift */,
 				21BC5E9B2515D7040021BD4A /* RootListView.swift */,
 				216135D42500D277003A2B7A /* CarBridge */,
@@ -279,7 +276,6 @@
 				216135D62500D293003A2B7A /* AbstractCar.swift in Sources */,
 				216135DE2500E23D003A2B7A /* SpeedWay.swift in Sources */,
 				215E60D4251E0E0200B14191 /* TestViewController.swift in Sources */,
-				219E904A258F2E7000B8A962 /* CameraView.swift in Sources */,
 				216135C824FFCE20003A2B7A /* AbstractSystem.swift in Sources */,
 				216135E02500E25C003A2B7A /* Street.swift in Sources */,
 				216135DA2500E079003A2B7A /* Car.swift in Sources */,
