@@ -350,7 +350,7 @@ class CameraViewController: UIViewController {
             preSubImage = UIImage.init(cgImage: preCGImage!)
             
             //添加蓝线
-            blueLine.draw(in: CGRect(x: CGFloat(offset), y: 0, width: 30, height: size.height))
+            blueLine.draw(in: CGRect(x: CGFloat(offset), y: 0, width: 10, height: size.height))
             let resultImage = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
             
@@ -361,7 +361,7 @@ class CameraViewController: UIViewController {
                 var newPixelBuffer: CVPixelBuffer?
                 CVPixelBufferPoolCreatePixelBuffer(nil, adaptor!.pixelBufferPool!, &newPixelBuffer)
                 
-                context.render(CIImage.init(image: resultImage!)!, to: newPixelBuffer!, bounds: ciImage.extent, colorSpace: nil)
+                context.render(CIImage.init(image: resultImage!)!, to: newPixelBuffer!, bounds: ciImage.extent, colorSpace: CGColorSpaceCreateDeviceRGB())
                 
                 if !adaptor!.append(newPixelBuffer!, withPresentationTime: currentTime!) {
                     print("append field  \(String(describing: writer?.error))")
