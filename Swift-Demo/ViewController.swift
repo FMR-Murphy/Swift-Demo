@@ -8,12 +8,14 @@
 import UIKit
 
 import ObjectiveC.message
+import Lottie
+import SnapKit
 
 class ViewController: UIViewController {
     
     @objc var name :String?
     @objc var value :Array<Any>?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.

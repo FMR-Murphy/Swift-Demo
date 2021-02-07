@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2129CFA025CF9EB0000580DD /* LottieLogo1.json in Resources */ = {isa = PBXBuildFile; fileRef = 2129CF9F25CF9EB0000580DD /* LottieLogo1.json */; };
 		215E60D4251E0E0200B14191 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215E60D3251E0E0200B14191 /* TestViewController.swift */; };
 		2161359224FFCBF7003A2B7A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2161359124FFCBF7003A2B7A /* AppDelegate.swift */; };
 		2161359424FFCBF7003A2B7A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2161359324FFCBF7003A2B7A /* SceneDelegate.swift */; };
@@ -33,6 +34,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2129CF9F25CF9EB0000580DD /* LottieLogo1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = LottieLogo1.json; sourceTree = "<group>"; };
 		215E60D3251E0E0200B14191 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		2161358E24FFCBF7003A2B7A /* Swift-Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift-Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2161359124FFCBF7003A2B7A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				21B4F76E258DFFAA003B0A2C /* CameraViewController.swift */,
 				21DA2DD8255051030028033D /* Timer+Weak.swift */,
 				21BC5E9B2515D7040021BD4A /* RootListView.swift */,
+				2129CF9F25CF9EB0000580DD /* LottieLogo1.json */,
 				216135D42500D277003A2B7A /* CarBridge */,
 				216135C924FFCF74003A2B7A /* Bridge */,
 				2161359724FFCBF7003A2B7A /* Main.storyboard */,
@@ -221,6 +224,7 @@
 				2161359E24FFCBFB003A2B7A /* LaunchScreen.storyboard in Resources */,
 				2161359B24FFCBFB003A2B7A /* Assets.xcassets in Resources */,
 				2161359924FFCBF7003A2B7A /* Main.storyboard in Resources */,
+				2129CFA025CF9EB0000580DD /* LottieLogo1.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,6 +444,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = ZYX47356W3;
 				INFOPLIST_FILE = "Swift-Demo/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -462,6 +467,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = ZYX47356W3;
 				INFOPLIST_FILE = "Swift-Demo/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

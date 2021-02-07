@@ -136,7 +136,7 @@ class CameraViewController: UIViewController {
         let context = UIGraphicsGetCurrentContext()
         context?.setFillColor(UIColor(hue:0.50, saturation:0.52, brightness:0.94, alpha:1.00).cgColor)
         context?.fill(rect)
-         
+        
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
